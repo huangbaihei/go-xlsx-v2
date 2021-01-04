@@ -24,7 +24,7 @@ func main() {
 func createServer() {
 	//建立socket，监听端口  第一步:绑定端口
 	//netListen, err := net.Listen("tcp", "localhost:1024")
-	netListen, err := net.Listen("tcp", "127.0.0.1:9800")
+	netListen, err := net.Listen("tcp", "127.0.0.1:9889")
 	CheckError(err)
 	//defer延迟关闭改资源，以免引起内存泄漏
 	defer netListen.Close()
@@ -97,15 +97,15 @@ func handleConnection(conn net.Conn) {
 						time.Sleep(time.Duration(10) * time.Millisecond)
 						conn.Write([]byte("处理中断，因为第" + strconv.Itoa(sourceIndex+1) + "个文件的" + sheetName + "表缺少了" + strconv.Itoa(10-row0Len) + "个列字段"))
 						return
-					} else if row0Len > 10 {
+					} else if row0Len > 11 {
 						time.Sleep(time.Duration(10) * time.Millisecond)
-						conn.Write([]byte("处理中断，因为第" + strconv.Itoa(sourceIndex+1) + "个文件的" + sheetName + "表多出了" + strconv.Itoa(row0Len-10) + "个列字段"))
+						conn.Write([]byte("处理中断，因为第" + strconv.Itoa(sourceIndex+1) + "个文件的" + sheetName + "表多出了" + strconv.Itoa(row0Len-11) + "个列字段"))
 						return
 					}
 
 					// 进行字段名字和顺序校验
 					errNameList := []string{}
-					keyNameList := []string{"账户号", "交易描述", "卡号", "交易日期", "币种", "交易金额", "余额", "姓名", "证件号码", "编号"}
+					keyNameList := []string{"账户号", "交易描述", "卡号", "交易日期", "币种", "交易金额", "余额", "姓名", "证件号码", "编号", "案号"}
 					for i, name := range rows[0] {
 						if name != keyNameList[i] {
 							colName, _ := excelize.ColumnNumberToName(i + 1)
@@ -148,6 +148,10 @@ func handleConnection(conn net.Conn) {
 								rowsBodySlice = rowsBody[breakPoint : i+1]
 							}
 							breakPoint = i + 1
+							caseNum := ""
+							if row0Len == 11 {
+								caseNum = rowsBodySlice[0][10]
+							}
 							order := rowsBodySlice[0][9]
 							accout := rowsBodySlice[0][0]
 							name := rowsBodySlice[0][7]
@@ -155,7 +159,7 @@ func handleConnection(conn net.Conn) {
 							templateOutput := [][]string{
 								{order, "", "", "", "", ""},
 								{"上海浦东发展银行个人信用卡账户对账单", "", "", "", "", ""},
-								{"案号：", "", "", "账户号：", accout, ""},
+								{"案号：", caseNum, "", "账户号：", accout, ""},
 								{"姓名：", name, "", "证件号码：", id, ""},
 							}
 							for i := range rowsBodySlice {
@@ -262,6 +266,7 @@ func handleConnection(conn net.Conn) {
 							styleDateStr := `"number_format":14`
 							styleFontSizeStr := `"font":{"family":"宋体","size":14}`
 							styleAlignmentRightStr := `"alignment":{"horizontal":"right","vertical":"center"}`
+							styleAlignmentLeftStr := `"alignment":{"horizontal":"left","vertical":"center"}`
 
 							styleBase, _ := f.NewStyle("{" + styleBaseStr + "}")
 							err := f.SetCellStyle(sheetName, "A1", lastCellAxis, styleBase)
@@ -284,6 +289,14 @@ func handleConnection(conn net.Conn) {
 							f.SetCellValue(sheetName, "D3", "账  户  号：")
 							f.MergeCell(sheetName, "A1", "F1")
 							f.MergeCell(sheetName, "A2", "F2")
+							f.MergeCell(sheetName, "B3", "C3")
+							f.MergeCell(sheetName, "B4", "C4")
+
+							styleAlignmentLeft, _ := f.NewStyle("{" + styleBaseStr + "," + styleAlignmentLeftStr + "}")
+							err = f.SetCellStyle(sheetName, "B3", "B3", styleAlignmentLeft)
+							err = f.SetCellStyle(sheetName, "B4", "B4", styleAlignmentLeft)
+							err = f.SetCellStyle(sheetName, "E3", "E3", styleAlignmentLeft)
+							err = f.SetCellStyle(sheetName, "E4", "E4", styleAlignmentLeft)
 
 							// 打印格式
 							f.SetPageMargins(sheetName,
@@ -531,6 +544,9 @@ func isValueInList(value string, list []string) bool {
 func handleRow(row []string) []string {
 	// 删掉不需要的列
 	deleteList := []int{9, 8, 7, 4}
+	if len(row) == 11 {
+		deleteList = []int{10, 9, 8, 7, 4}
+	}
 	for _, i := range deleteList {
 		row = append(row[:i], row[i+1:]...)
 	}
