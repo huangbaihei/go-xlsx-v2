@@ -418,7 +418,7 @@ func handleConnection(conn net.Conn) {
 
 								// 模板列宽和行高
 								colWidthList := [19]float64{18.28, 12.37, 4.16, 8.75, 8.2, 8.41, 8.63, 10.41, 8.78, 15.34, 8.01, 15.15, 16.68, 9.53, 11.68, 9.48, 25.28, 19.01, 7.44}
-								rowHeightList := [4]float64{9, 15, 29, 42}
+								rowHeightList := [4]float64{9, 15}
 
 								// for i := range colWidthList {
 								// 	colName, _ := excelize.ColumnNumberToName(i + 1)
@@ -477,7 +477,7 @@ func handleConnection(conn net.Conn) {
 								// 单元格格式
 								styleBaseStr := `"alignment":{"horizontal":"center","vertical":"center"},"font":{"family":"宋体","size":10}`
 								styleAlignmentLeftStr := `"alignment":{"horizontal":"left","vertical":"center"}`
-								styleAlignmentJustifyStr := `"alignment":{"horizontal":"justify","vertical":"center"}`
+								styleAlignmentJustifyStr := `"alignment":{"horizontal":"justify","vertical":"center","wrap_text":true}`
 
 								styleBase, _ := f.NewStyle("{" + styleBaseStr + "}")
 								err := f.SetCellStyle(sheetName, "A1", lastCellAxis, styleBase)
@@ -493,19 +493,11 @@ func handleConnection(conn net.Conn) {
 									colName, _ := excelize.ColumnNumberToName(i + 1)
 									f.SetColWidth(sheetName, colName, colName, math.Trunc((colWidth*7+5)/7*256)/256)
 								}
-								for i, row := range templateOutput {
+								for i := range templateOutput {
 									if i == 2 {
 										f.SetRowHeight(sheetName, i+1, rowHeightList[0])
 									} else if i > 3 {
-										if len(row[16]) > 28*3 {
-											f.SetRowHeight(sheetName, i+1, rowHeightList[3])
-											err = f.SetCellStyle(sheetName, "Q"+strconv.Itoa(i+1), "Q"+strconv.Itoa(i+1), styleAlignmentJustify)
-										} else if len(row[16]) > 14*3 {
-											f.SetRowHeight(sheetName, i+1, rowHeightList[2])
-											err = f.SetCellStyle(sheetName, "Q"+strconv.Itoa(i+1), "Q"+strconv.Itoa(i+1), styleAlignmentJustify)
-										} else {
-											f.SetRowHeight(sheetName, i+1, rowHeightList[1])
-										}
+										err = f.SetCellStyle(sheetName, "Q"+strconv.Itoa(i+1), "Q"+strconv.Itoa(i+1), styleAlignmentJustify)
 									} else {
 										f.SetRowHeight(sheetName, i+1, rowHeightList[1])
 									}
@@ -633,7 +625,7 @@ func handleConnection(conn net.Conn) {
 
 								// 模板列宽和行高
 								colWidthList := [9]float64{8.51, 17.13, 15.2, 7.82, 8.51, 7.01, 10.26, 8.7, 58.67}
-								rowHeightList := [6]float64{9, 15, 29, 42, 55, 68}
+								rowHeightList := [6]float64{9, 15}
 
 								// for i := range colWidthList {
 								// 	colName, _ := excelize.ColumnNumberToName(i + 1)
@@ -693,7 +685,7 @@ func handleConnection(conn net.Conn) {
 								// 单元格格式
 								styleBaseStr := `"alignment":{"horizontal":"center","vertical":"center"},"font":{"family":"宋体","size":10}`
 								styleAlignmentLeftStr := `"alignment":{"horizontal":"left","vertical":"center"}`
-								styleAlignmentJustifyStr := `"alignment":{"horizontal":"justify","vertical":"center"}`
+								styleAlignmentJustifyStr := `"alignment":{"horizontal":"justify","vertical":"center","wrap_text":true}`
 
 								styleBase, _ := f.NewStyle("{" + styleBaseStr + "}")
 								err := f.SetCellStyle(sheetName, "A1", lastCellAxis, styleBase)
@@ -709,25 +701,11 @@ func handleConnection(conn net.Conn) {
 									colName, _ := excelize.ColumnNumberToName(i + 1)
 									f.SetColWidth(sheetName, colName, colName, math.Trunc((colWidth*7+5)/7*256)/256)
 								}
-								for i, row := range templateOutput {
+								for i := range templateOutput {
 									if i == 2 {
 										f.SetRowHeight(sheetName, i+1, rowHeightList[0])
 									} else if i > 3 {
-										if len(row[8]) > 4*34*3 {
-											f.SetRowHeight(sheetName, i+1, rowHeightList[5])
-											err = f.SetCellStyle(sheetName, "I"+strconv.Itoa(i+1), "I"+strconv.Itoa(i+1), styleAlignmentJustify)
-										} else if len(row[8]) > 3*34*3 {
-											f.SetRowHeight(sheetName, i+1, rowHeightList[4])
-											err = f.SetCellStyle(sheetName, "I"+strconv.Itoa(i+1), "I"+strconv.Itoa(i+1), styleAlignmentJustify)
-										} else if len(row[8]) > 2*34*3 {
-											f.SetRowHeight(sheetName, i+1, rowHeightList[3])
-											err = f.SetCellStyle(sheetName, "I"+strconv.Itoa(i+1), "I"+strconv.Itoa(i+1), styleAlignmentJustify)
-										} else if len(row[8]) > 34*3 {
-											f.SetRowHeight(sheetName, i+1, rowHeightList[2])
-											err = f.SetCellStyle(sheetName, "I"+strconv.Itoa(i+1), "I"+strconv.Itoa(i+1), styleAlignmentJustify)
-										} else {
-											f.SetRowHeight(sheetName, i+1, rowHeightList[1])
-										}
+										err = f.SetCellStyle(sheetName, "I"+strconv.Itoa(i+1), "I"+strconv.Itoa(i+1), styleAlignmentJustify)
 									} else {
 										f.SetRowHeight(sheetName, i+1, rowHeightList[1])
 									}
