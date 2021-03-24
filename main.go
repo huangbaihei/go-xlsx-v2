@@ -232,6 +232,9 @@ func handleConnection(conn net.Conn) {
 										if i > 4 {
 											if j == 2 || j == 5 {
 												float, _ := strconv.ParseFloat(cellValue, 64)
+												if float < 0.01 && float > 0 {
+													float = 0
+												}
 												f.SetCellValue(sheetName, cell, float)
 											} else if j == 1 {
 												timeValue, _ := time.Parse("01-02-06", cellValue)
