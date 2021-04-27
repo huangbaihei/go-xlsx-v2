@@ -154,7 +154,7 @@ func handleConnection(conn net.Conn) {
 								}
 								breakPoint = i + 1
 								caseNum := ""
-								if row0Len == 11 {
+								if row0Len == 11 && len(rowsBodySlice[0]) == 11 {
 									caseNum = rowsBodySlice[0][10]
 								}
 								order := rowsBodySlice[0][9]
@@ -232,7 +232,7 @@ func handleConnection(conn net.Conn) {
 										if i > 4 {
 											if j == 2 || j == 5 {
 												float, _ := strconv.ParseFloat(cellValue, 64)
-												if float < 0.01 && float > 0 {
+												if float < 0.01 && float > -0.01 {
 													float = 0
 												}
 												f.SetCellValue(sheetName, cell, float)
